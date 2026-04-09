@@ -254,43 +254,43 @@ siteData.awards = [
   {
     titleZh: "工信部“绽放杯”国家一等奖",
     titleEn: 'MIIT "Blooming Cup" National First Prize',
-    noteZh: "奖项图片待上传，当前为展示占位。",
-    noteEn: "Awaiting uploaded award image. Placeholder is used for now.",
+    noteZh: "National-level recognition in a major industry innovation competition.",
+    noteEn: "National-level recognition in a major industry innovation competition.",
     images: ["assets/gongxinbu.jpg"],
   },
   {
     titleZh: "腾讯精英人才技术突破奖",
     titleEn: "Tencent Elite Talent Technology Breakthrough Award",
-    noteZh: "奖项图片待上传，当前为展示占位。",
-    noteEn: "Awaiting uploaded award image. Placeholder is used for now.",
+    noteZh: "Awarded for technical breakthrough and research impact during work at Tencent.",
+    noteEn: "Awarded for technical breakthrough and research impact during work at Tencent.",
     images: ["assets/tencent.jpg", "assets/tencent2.jpg"],
   },
   {
     titleZh: "全国 AI 智能 Coding 大赛国家特等奖",
     titleEn: "National AI Intelligent Coding Competition Grand Prize",
-    noteZh: "可在上传后替换为奖杯、证书或现场照片。",
-    noteEn: "Can be replaced with trophy, certificate, or event image after upload.",
+    noteZh: "Top national award in an AI-oriented coding competition.",
+    noteEn: "Top national award in an AI-oriented coding competition.",
     images: ["assets/national-tedeng.jpg"],
   },
   {
     titleZh: "山东省一等奖",
     titleEn: "Shandong Provincial First Prize",
-    noteZh: "奖项图片待上传，当前为展示占位。",
-    noteEn: "Awaiting uploaded award image. Placeholder is used for now.",
+    noteZh: "Provincial first prize associated with the competition track.",
+    noteEn: "Provincial first prize associated with the competition track.",
     images: ["assets/shandongprovince-yideng.jpg"],
   },
   {
     titleZh: "2024 中国 CIO 数字科技优秀人物奖",
     titleEn: "2024 China CIO Outstanding Digital Technology Figure Award",
-    noteZh: "奖项图片待上传，当前为展示占位。",
-    noteEn: "Awaiting uploaded award image. Placeholder is used for now.",
+    noteZh: "Recognition for innovation and influence in digital technology.",
+    noteEn: "Recognition for innovation and influence in digital technology.",
     images: ["assets/outstanding.jpg"],
   },
   {
     titleZh: "Kaggle WSDM24 金牌",
     titleEn: "Kaggle WSDM24 Gold Medal",
-    noteZh: "后续可替换为排行榜截图或领奖图。",
-    noteEn: "Can later be replaced with leaderboard screenshots or event photos.",
+    noteZh: "Gold medal performance in the WSDM24 multilingual chatbot arena.",
+    noteEn: "Gold medal performance in the WSDM24 multilingual chatbot arena.",
     images: ["assets/kaggle.jpg"],
   },
 ];
@@ -455,6 +455,21 @@ function el(tag, className, text) {
   return node;
 }
 
+function buildAwardImageButton(src, alt, className = "") {
+  const button = el("button", `award-image-button ${className}`.trim());
+  button.type = "button";
+  button.dataset.imageSrc = src;
+  button.dataset.imageAlt = alt;
+
+  const img = document.createElement("img");
+  img.className = "award-image-thumb";
+  img.src = src;
+  img.alt = alt;
+  button.append(img);
+
+  return button;
+}
+
 function applyI18n() {
   document.querySelectorAll("[data-i18n]").forEach((node) => {
     node.textContent = t(node.dataset.i18n);
@@ -608,14 +623,19 @@ function renderAwards() {
     const image = el("div", `award-image${images.length ? " has-image" : ""}`);
     if (images.length > 1) {
       const grid = el("div", "award-image-grid");
-      images.forEach((src) => {
-        const tile = el("div", "award-image-tile");
-        tile.style.backgroundImage = `url("${src}")`;
-        grid.append(tile);
+      images.forEach((src, imageIndex) => {
+        const tileAlt = `${state.lang === "zh" ? award.titleZh : award.titleEn} image ${imageIndex + 1}`;
+        grid.append(buildAwardImageButton(src, tileAlt, "award-image-tile"));
       });
       image.append(grid);
     } else if (images.length === 1) {
-      image.style.backgroundImage = `url("${images[0]}")`;
+      image.append(
+        buildAwardImageButton(
+          images[0],
+          state.lang === "zh" ? award.titleZh : award.titleEn,
+          "award-single-button",
+        ),
+      );
     } else {
       image.append(el("div", "award-image-placeholder", `AWARD ${String(index + 1).padStart(2, "0")}`));
     }
@@ -626,6 +646,42 @@ function renderAwards() {
     card.append(image);
     card.append(content);
     target.append(card);
+  });
+}
+
+function setupLightbox() {
+  const lightbox = document.getElementById("image-lightbox");
+  const lightboxImage = document.getElementById("lightbox-image");
+  const closeButton = document.getElementById("lightbox-close");
+
+  function closeLightbox() {
+    lightbox.classList.remove("is-open");
+    lightbox.setAttribute("aria-hidden", "true");
+    lightboxImage.src = "";
+    lightboxImage.alt = "";
+  }
+
+  document.addEventListener("click", (event) => {
+    const trigger = event.target.closest("[data-image-src]");
+    if (trigger) {
+      lightboxImage.src = trigger.dataset.imageSrc;
+      lightboxImage.alt = trigger.dataset.imageAlt || "Award preview";
+      lightbox.classList.add("is-open");
+      lightbox.setAttribute("aria-hidden", "false");
+      return;
+    }
+
+    if (event.target.closest("[data-lightbox-close='true']")) {
+      closeLightbox();
+    }
+  });
+
+  closeButton.addEventListener("click", closeLightbox);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && lightbox.classList.contains("is-open")) {
+      closeLightbox();
+    }
   });
 }
 
@@ -745,3 +801,4 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 
 render();
 drawParticles();
+setupLightbox();

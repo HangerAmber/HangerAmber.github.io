@@ -578,6 +578,8 @@ button {
   min-height: 176px;
   display: grid;
   place-items: center;
+  position: relative;
+  overflow: hidden;
   background:
     linear-gradient(135deg, rgba(121, 208, 255, 0.12), rgba(127, 108, 255, 0.15)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.01));
@@ -585,8 +587,7 @@ button {
 }
 
 .award-image.has-image {
-  background-size: cover;
-  background-position: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.02));
 }
 
 .award-image-grid {
@@ -598,11 +599,92 @@ button {
   padding: 12px;
 }
 
+.award-image-button,
 .award-image-tile {
-  border-radius: 14px;
-  background-size: cover;
-  background-position: center;
+  appearance: none;
   border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 0;
+  cursor: zoom-in;
+  border-radius: 14px;
+  overflow: hidden;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.award-image-button:hover,
+.award-image-tile:hover {
+  transform: translateY(-1px);
+  border-color: rgba(121, 208, 255, 0.35);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+}
+
+.award-single-button {
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  margin: 12px;
+}
+
+.award-image-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  background: rgba(255, 255, 255, 0.025);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+}
+
+.lightbox.is-open {
+  display: block;
+}
+
+.lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 15, 0.84);
+  backdrop-filter: blur(8px);
+}
+
+.lightbox-content {
+  position: absolute;
+  inset: 5vh 5vw;
+  display: grid;
+  place-items: center;
+}
+
+.lightbox-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: #0a1022;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-size: 1.8rem;
+  line-height: 1;
+  cursor: pointer;
 }
 
 .award-image-placeholder {
